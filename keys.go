@@ -1,19 +1,21 @@
 package keys
 
 import (
-    "fmt"
     "crypto/x509"
     "crypto/rsa"
     "crypto/rand"
     "encoding/pem"
+    "log"
 )
 
-func main() {
+func GenRSAKeys() {
+
+    keys := make(map[string]string )
 
     privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 
     if err != nil {
-        fmt.Println(err)
+        log.Fatalf("Error generating private key: ", err) 
     }
 
     privateKeyDer := x509.MarshalPKCS1PrivateKey(privateKey)
@@ -31,7 +33,7 @@ func main() {
     publicKeyDer, err := x509.MarshalPKIXPublicKey(&publicKey)
 
     if err != nil {
-        fmt.Println(err)
+        log.Fatalf("Error generating public key: ", err) 
     }
     
     publicKeyBlock := pem.Block{
@@ -42,7 +44,9 @@ func main() {
 
     publicKeyPem := string(pem.EncodeToMemory(&publicKeyBlock))
 
-    fmt.Println(privateKeyPem)
-    fmt.Println(publicKeyPem)   
+    keys["privateKey"] = privateKeyPem
+    keys["publicKey"] = publicKeyPem
+
+    return keys
 }
 
