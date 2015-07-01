@@ -1,4 +1,4 @@
-package main
+package keys
 
 import (
     "fmt"
@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-    privateKey, err := rsa.GenerateKey(rand.Reader, 2014)
+    privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 
     if err != nil {
         fmt.Println(err)
@@ -18,7 +18,7 @@ func main() {
 
     privateKeyDer := x509.MarshalPKCS1PrivateKey(privateKey)
 
-    privateKeyBlock := pem.Block{
+    privateKeyBlock := pem.Block{   
         Type:    "RSA PRIVATE KEY",
         Headers: nil,
         Bytes:   privateKeyDer,
@@ -33,7 +33,7 @@ func main() {
     if err != nil {
         fmt.Println(err)
     }
-
+    
     publicKeyBlock := pem.Block{
         Type:    "PUBLIC KEY",
         Headers: nil,
