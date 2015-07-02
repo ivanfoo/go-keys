@@ -1,4 +1,4 @@
-package keys
+package urkel
 
 import (
     "crypto/x509"
@@ -6,9 +6,10 @@ import (
     "crypto/rand"
     "encoding/pem"
     "log"
+    "os"
 )
 
-func GenRSAKey(keyLength int) (string, string) {
+func GenKey(keyLength int) (string, string) {
 
     privateKeyRaw, err := rsa.GenerateKey(rand.Reader, keyLength)
 
@@ -44,4 +45,31 @@ func GenRSAKey(keyLength int) (string, string) {
 
     return privateKey, publicKey
 }
+
+func GenKeyToFile(keyLength int, fileName string) {
+    var privateKey, publicKey string
+    privateKey, publicKey = GenKey(keyLength)
+    file, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY,0644)
+   
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer file.Close()
+
+    if _, err = file.WriteString(privateKey); err != nil {
+        log.Fatal(err)
+    }
+
+    file, err = os.OpenFile("rsa_key.pub", os.O_CREATE|os.O_WRONLY,0644)
+   
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer file.Close()
+
+    if _, err = file.WriteString(publicKey); err != nil {
+        log.Fatal(err)
+    }
+}
+
 
