@@ -8,45 +8,40 @@ import (
     "log"
 )
 
-func GenRSAKeys() {
+func GenRSAKey(keyLength int) (string, string) {
 
-    keys := make(map[string]string )
-
-    privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+    privateKeyRaw, err := rsa.GenerateKey(rand.Reader, keyLength)
 
     if err != nil {
-        log.Fatalf("Error generating private key: ", err) 
+        log.Fatal("Error generating keys")
     }
 
-    privateKeyDer := x509.MarshalPKCS1PrivateKey(privateKey)
+    privateKeyDer := x509.MarshalPKCS1PrivateKey(privateKeyRaw)
 
-    privateKeyBlock := pem.Block{   
+    privateKeyBlock := pem.Block {   
         Type:    "RSA PRIVATE KEY",
         Headers: nil,
         Bytes:   privateKeyDer,
     }
 
-    privateKeyPem := string(pem.EncodeToMemory(&privateKeyBlock))
+    privateKey := string(pem.EncodeToMemory(&privateKeyBlock))
 
-    publicKey := privateKey.PublicKey
+    publicKeyRaw := privateKeyRaw.PublicKey
 
-    publicKeyDer, err := x509.MarshalPKIXPublicKey(&publicKey)
+    publicKeyDer, err := x509.MarshalPKIXPublicKey(&publicKeyRaw)
 
     if err != nil {
-        log.Fatalf("Error generating public key: ", err) 
+        log.Fatalf("Error serializing public key") 
     }
     
-    publicKeyBlock := pem.Block{
+    publicKeyBlock := pem.Block {
         Type:    "PUBLIC KEY",
         Headers: nil,
         Bytes:   publicKeyDer,
     }
 
-    publicKeyPem := string(pem.EncodeToMemory(&publicKeyBlock))
+    publicKey := string(pem.EncodeToMemory(&publicKeyBlock))
 
-    keys["privateKey"] = privateKeyPem
-    keys["publicKey"] = publicKeyPem
-
-    return keys
+    return privateKey, publicKey
 }
 
