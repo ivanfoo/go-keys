@@ -1,49 +1,46 @@
 package urkel
 
 import (
-    "crypto/x509"
-    "crypto/rsa"
-    "crypto/rand"
-    "encoding/pem"
-    "log"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
+	"log"
 )
 
 func GenPemRSA(keyLength int) (string, string) {
 
-    privateKeyRaw, err := rsa.GenerateKey(rand.Reader, keyLength)
+	privateKeyRaw, err := rsa.GenerateKey(rand.Reader, keyLength)
 
-    if err != nil {
-        log.Fatal("Error generating keys")
-    }
+	if err != nil {
+		log.Fatal("Error generating keys")
+	}
 
-    privateKeyDer := x509.MarshalPKCS1PrivateKey(privateKeyRaw)
+	privateKeyDer := x509.MarshalPKCS1PrivateKey(privateKeyRaw)
 
-    privateKeyBlock := pem.Block {   
-        Type:    "RSA PRIVATE KEY",
-        Headers: nil,
-        Bytes:   privateKeyDer,
-    }
+	privateKeyBlock := pem.Block{
+		Type:    "RSA PRIVATE KEY",
+		Headers: nil,
+		Bytes:   privateKeyDer,
+	}
 
-    privateKeyPem := string(pem.EncodeToMemory(&privateKeyBlock))
+	privateKeyPem := string(pem.EncodeToMemory(&privateKeyBlock))
 
-    publicKeyRaw := privateKeyRaw.PublicKey
+	publicKeyRaw := privateKeyRaw.PublicKey
 
-    publicKeyDer, err := x509.MarshalPKIXPublicKey(&publicKeyRaw)
+	publicKeyDer, err := x509.MarshalPKIXPublicKey(&publicKeyRaw)
 
-    if err != nil {
-        log.Fatalf("Error serializing public key") 
-    }
-    
-    publicKeyBlock := pem.Block {
-        Type:    "PUBLIC KEY",
-        Headers: nil,
-        Bytes:   publicKeyDer,
-    }
+	if err != nil {
+		log.Fatalf("Error serializing public key")
+	}
 
-    publicKeyPem := string(pem.EncodeToMemory(&publicKeyBlock))
+	publicKeyBlock := pem.Block{
+		Type:    "PUBLIC KEY",
+		Headers: nil,
+		Bytes:   publicKeyDer,
+	}
 
-    return privateKeyPem, publicKeyPem
+	publicKeyPem := string(pem.EncodeToMemory(&publicKeyBlock))
+
+	return privateKeyPem, publicKeyPem
 }
-
-
-
